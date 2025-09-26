@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -38,8 +38,8 @@ def convert_db_story_to_response(db_story: EmojiStory) -> EmojiStoryResponse:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request):
-    return templates.TemplateResponse(request, "index.html")
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/api/stories", response_model=list[EmojiStoryResponse])
@@ -57,7 +57,7 @@ def get_stories(
 
 
 @app.get("/api/stories/{story_id}", response_model=EmojiStoryResponse)
-def get_story(story_id: int, db: Session = Depends(get_db)):
+def get_story(story_id: str, db: Session = Depends(get_db)):
     story = db.query(EmojiStory).filter(EmojiStory.id == story_id).first()
     if story is None:
         raise HTTPException(status_code=404, detail="Story not found")
@@ -69,8 +69,8 @@ def create_story(story: EmojiStoryCreate, db: Session = Depends(get_db)):
     translation = translation_service.translate(story.emoji_sequence)
 
     db_story = EmojiStory(
-        id=(uuid.uuid4()),
-        emoji_sequence=story.emoji_sequence,
+        id=str(uuid.uuid4()),
+        emoji_sequence=json.dumps(story.emoji_sequence),
         translation=translation,
         author_nickname=story.author_nickname,
         likes=0,
@@ -84,11 +84,11 @@ def create_story(story: EmojiStoryCreate, db: Session = Depends(get_db)):
 
 @app.put("/api/stories/{story_id}", response_model=EmojiStoryResponse)
 def update_story(
-    story_id: int, story_update: EmojiStoryResponse, db: Session = Depends(get_db)
+    story_id: str, story_update: EmojiStoryResponse, db: Session = Depends(get_db)
 ):
     story = db.query(EmojiStory).filter(EmojiStory.id == story_id).first()
     if story is None:
-        return HTTPException(status_code=404, detail="Story not found")
+        raise HTTPException(status_code=404, detail="Story not found")
 
     if story_update.emoji_sequence is not None:
         story.emoji_sequence = json.dumps(story_update.emoji_sequence)  # type: ignore
@@ -103,10 +103,10 @@ def update_story(
 
 
 @app.delete("/api/stories/{story_id}")
-def delete_story(story_id: int, db: Session = Depends(get_db)):
+def delete_story(story_id: str, db: Session = Depends(get_db)):
     story = db.query(EmojiStory).filter(EmojiStory.id == story_id).first()
     if story is None:
-        return HTTPException(status_code=404, detail="Story not found")
+        raise HTTPException(status_code=404, detail="Story not found")
 
     # Also delete associated translations
     db.query(Translation).filter(Translation.story_id == story_id).delete()
