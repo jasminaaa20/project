@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Story Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="emoji-title">📚✨</span>
+                Emoji Story Generator
+                <span class="emoji-title">✨📚</span>
+            </h1>
+            <p class="subtitle">Create magical stories with emojis and watch them come to life!</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Story Composer -->
+            <section class="composer-section">
+                <div class="composer-card">
+                    <h2 class="section-title">
+                        <span class="section-icon">✏️</span>
+                        Create Your Emoji Story
+                    </h2>
+                    
+                    <!-- Author Input -->
+                    <div class="author-input-container">
+                        <input 
+                            type="text" 
+                            id="authorNickname" 
+                            class="author-input" 
+                            placeholder="Enter your nickname..."
+                            maxlength="50"
+                        >
+                    </div>
+
+                    <!-- Emoji Picker Categories -->
+                    <div class="emoji-categories">
+                        <button class="category-btn active" data-category="popular">🔥 Popular</button>
+                        <button class="category-btn" data-category="faces">😊 Faces</button>
+                        <button class="category-btn" data-category="animals">🐶 Animals</button>
+                        <button class="category-btn" data-category="nature">🌟 Nature</button>
+                        <button class="category-btn" data-category="food">🍕 Food</button>
+                        <button class="category-btn" data-category="activities">⚽ Activities</button>
+                        <button class="category-btn" data-category="objects">📱 Objects</button>
+                    </div>
+
+                    <!-- Emoji Grid -->
+                    <div class="emoji-grid" id="emojiGrid">
+                        <!-- Emojis will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Story Display Area -->
+                    <div class="story-display">
+                        <div class="story-emojis" id="storyEmojis">
+                            <div class="empty-story">Click emojis above to start your story! 📖</div>
+                        </div>
+                        <div class="story-controls">
+                            <button class="btn btn-secondary" id="clearStory">
+                                <span class="btn-icon">🗑️</span>
+                                Clear
+                            </button>
+                            <button class="btn btn-secondary" id="undoLast" disabled>
+                                <span class="btn-icon">↩️</span>
+                                Undo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Translation Preview -->
+                    <div class="translation-preview">
+                        <h3 class="preview-title">
+                            <span class="preview-icon">🔮</span>
+                            Live Translation Preview
+                        </h3>
+                        <div class="preview-content" id="translationPreview">
+                            <div class="preview-placeholder">Your story translation will appear here...</div>
+                        </div>
+                        <div class="preview-meta" id="previewMeta"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="saveStory" disabled>
+                            <span class="btn-icon">💾</span>
+                            Save Story
+                        </button>
+                        <button class="btn btn-secondary" id="getRandomStory">
+                            <span class="btn-icon">🎲</span>
+                            Random Story
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stories Gallery -->
+            <section class="gallery-section">
+                <div class="gallery-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🌟</span>
+                        Community Stories
+                    </h2>
+                    <div class="gallery-controls">
+                        <button class="btn btn-secondary" id="sortByLatest">📅 Latest</button>
+                        <button class="btn btn-secondary" id="sortByPopular">🔥 Popular</button>
+                        <button class="btn btn-secondary" id="refreshStories">🔄 Refresh</button>
+                    </div>
+                </div>
+                
+                <!-- Loading State -->
+                <div class="loading" id="storiesLoading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading amazing stories...</div>
+                </div>
+
+                <!-- Stories Grid -->
+                <div class="stories-grid" id="storiesGrid">
+                    <!-- Stories will be populated by JavaScript -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button class="btn btn-secondary" id="loadMoreStories">
+                        <span class="btn-icon">📚</span>
+                        Load More Stories
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Floating Action Button for Mobile -->
+        <button class="fab" id="createStoryFab">
+            <span class="fab-icon">✏️</span>
+        </button>
+    </div>
+
+    <!-- Success/Error Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-content" id="toastContent"></div>
+        <button class="toast-close" id="toastClose">×</button>
+    </div>
+
+    <!-- Story Modal for detailed view -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Story Details</h3>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Story details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='script.js') }}"></script>
+</body>
+</html>
